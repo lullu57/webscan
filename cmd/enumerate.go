@@ -138,6 +138,9 @@ func (a *WebScan) InitEnumerateCommand() {
 
 			// Generate report
 			report := enumerateapiapplication.PerformAppEnumerateGraphQL(cmd.Context(), config)
+			if len(report.Errors) > 0 {
+				a.OutputSignal.Status = 1
+			}
 			a.OutputSignal.Content = report
 		},
 	}
