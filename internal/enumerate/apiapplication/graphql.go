@@ -163,6 +163,9 @@ func PerformAppEnumerateGraphQL(ctx context.Context, config enumerateapiapplicat
 		response := string(body)
 		data.QueryResponse = &response
 	}
+	// Attach the evidence before attempting to decode it. Invalid JSON is still
+	// a failed scan, but callers need the received body to diagnose that failure.
+	report.Result.Data = data
 
 	// A GraphQL server can return HTTP 200 with a top-level errors array. Treat
 	// that response as a failed scan while retaining the raw response for review.
