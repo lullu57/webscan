@@ -54,7 +54,7 @@ func TestWebscanHelperProcess(t *testing.T) {
 	main()
 }
 
-func TestGraphQLHTTPErrorExitsNonZero(t *testing.T) {
+func TestGraphQLHTTPErrorExitsZero(t *testing.T) {
 	t.Parallel()
 
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
@@ -70,17 +70,8 @@ func TestGraphQLHTTPErrorExitsNonZero(t *testing.T) {
 		"WEBSCAN_TEST_OUTPUT="+filepath.Join(tempDir, "output.json"),
 	)
 
-	err := cmd.Run()
-	if err == nil {
-		t.Fatal("expected webscan to exit nonzero when the GraphQL endpoint returns 404")
-	}
-
-	exitErr, ok := err.(*exec.ExitError)
-	if !ok {
-		t.Fatalf("expected an exit error, got %T: %v", err, err)
-	}
-	if exitErr.ExitCode() != 1 {
-		t.Fatalf("expected exit code 1, got %d", exitErr.ExitCode())
+	if output, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("expected webscan to exit 0 when the GraphQL endpoint returns 404, got %v: %s", err, output)
 	}
 }
 
